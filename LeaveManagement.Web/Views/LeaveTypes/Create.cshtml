@@ -1,0 +1,36 @@
+﻿@model LeaveTypeVM
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Création d'un type de congés</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="DefaultDays" class="control-label"></label>
+                <input asp-for="DefaultDays" class="form-control" />
+                <span asp-validation-for="DefaultDays" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-dark">Retour à la liste</a> &nbsp;
+                <input type="submit" value="Soumettre" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
