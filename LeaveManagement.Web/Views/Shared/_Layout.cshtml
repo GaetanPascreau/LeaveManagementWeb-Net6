@@ -31,17 +31,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">Mes congés</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Gestion des congés
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Types de congés</a></li>
-                                <li><a class="dropdown-item" href="#">Allocations des congés</a></li>
-                                <li><a class="dropdown-item" href="#">Demandes de congés</a></li>
-                                <li><a class="dropdown-item" href="#">Gestion des employés</a></li>
-                            </ul>
-                        </li>
+                        @if(User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.Supervisor))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Gestion des congés
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Types de congés</a></li>
+                                    <li><a class="dropdown-item" href="#">Allocations des congés</a></li>
+                                    <li><a class="dropdown-item" href="#">Demandes de congés</a></li>
+                                    <li><a class="dropdown-item" href="#">Gestion des employés</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

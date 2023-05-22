@@ -4,6 +4,7 @@ using LeaveManagement.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LeaveManagement.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230522102452_CorrectedRegisterAndSeededTables")]
+    partial class CorrectedRegisterAndSeededTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,9 +107,9 @@ namespace LeaveManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8d30dbae-134d-4137-8e2e-ec7c96ee1d82",
+                            Id = "0660045f-c7e7-497e-be81-e98bc3a88b9b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "842a3371-83c0-408c-a8f2-a84447dc1e1f",
+                            ConcurrencyStamp = "1f101be0-5fad-4fee-babf-c1ccc1e7a080",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@localhost.com",
@@ -116,17 +119,17 @@ namespace LeaveManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBoiHzwRurjnh3JzuKBDmOqQeXP8wmjjAWW2PUDUcwPxtEXt4Q/wTU0CXOMkPpUPXg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENPtkaOXWvWIgpgGrD2oHaZuvvOdMDTMDRIXd6Q8bL8z2JBdwlUp6zLbuGxYvDxQ3w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7ee26c9b-cc2e-403f-b8ee-17fbc908a27f",
+                            SecurityStamp = "ad551ad9-c1c7-4eba-b8ad-f3fd45602477",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
                         new
                         {
-                            Id = "cf15a7b7-1533-4357-9dbd-20cddfff903c",
+                            Id = "6e8f2f84-ff83-435f-a213-6fd6c41605e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e742bc94-ff7b-4e10-abdf-40320ddb5e6f",
+                            ConcurrencyStamp = "d39827cc-3901-48b8-a3ee-d4173308902d",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "user@localhost.com",
@@ -136,17 +139,17 @@ namespace LeaveManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJPbVN0A+Tp+1MYV6DswtbTEe5uj3qf3/zluxUDGmVegJMgIzTESkWzUUjpQhLaGIg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGg+vm8b8nMf5zGRu6pG5M3dek4C9jwYhC8GMMvZaosQ46XRyPfpc8Om7G6mHBcPpQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "853a4b4d-3404-4077-a075-95882bfc90b1",
+                            SecurityStamp = "238b9aee-994a-4261-8586-429a049388e3",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         },
                         new
                         {
-                            Id = "b3dce240b-4ce6-4202-b816-b5cc763352a7",
+                            Id = "bb0b5bc4-c8ca-4513-b6e9-cad12903a5f1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f01fc6e2-ab6b-4c43-afc0-440497e57571",
+                            ConcurrencyStamp = "367dc0a0-b5b0-4eb9-ba34-d7848b88222e",
                             DateJoined = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "supervisor@localhost.com",
@@ -156,9 +159,9 @@ namespace LeaveManagement.Web.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERVISOR@LOCALHOST.COM",
                             NormalizedUserName = "SUPERVISOR@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENByfBrJL6/sGy1PIH2YXecuNJn3Rh2wvpeGDXqp1mPO1tpTlKrUgpD21NSka//sJg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI6r6HTz7HS1Q91eJ3AGzhZ2mOydldx3gklrHVMVjDuiy+C4KFj8szdLHV2xT0lNXQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e31382d2-d27e-495d-96e3-3ac5cdb37196",
+                            SecurityStamp = "031baddc-163f-4ac7-a8a7-a6fda692b1f8",
                             TwoFactorEnabled = false,
                             UserName = "supervisor@localhost.com"
                         });
@@ -250,19 +253,19 @@ namespace LeaveManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "09ee071c-ed16-42ca-be60-a6e0b7e1ae29",
+                            Id = "f5d383f4-6aa0-4735-be17-26a2a23ad96d",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         },
                         new
                         {
-                            Id = "465b590d-d7cd-4b1f-b897-de900e81ac5c",
+                            Id = "98de57f4-0120-47ed-adf5-dfd68c5e93f7",
                             Name = "Supervisor",
                             NormalizedName = "SUPERVISOR"
                         },
                         new
                         {
-                            Id = "afccf3f3-12b4-4657-b24a-6642f8e34298",
+                            Id = "2e3b6685-1ed7-4938-b935-042a4983d016",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -359,18 +362,18 @@ namespace LeaveManagement.Web.Data.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "8d30dbae-134d-4137-8e2e-ec7c96ee1d82",
-                            RoleId = "09ee071c-ed16-42ca-be60-a6e0b7e1ae29"
+                            UserId = "0660045f-c7e7-497e-be81-e98bc3a88b9b",
+                            RoleId = "f5d383f4-6aa0-4735-be17-26a2a23ad96d"
                         },
                         new
                         {
-                            UserId = "cf15a7b7-1533-4357-9dbd-20cddfff903c",
-                            RoleId = "afccf3f3-12b4-4657-b24a-6642f8e34298"
+                            UserId = "6e8f2f84-ff83-435f-a213-6fd6c41605e5",
+                            RoleId = "2e3b6685-1ed7-4938-b935-042a4983d016"
                         },
                         new
                         {
-                            UserId = "3dce240b-4ce6-4202-b816-b5cc763352a7",
-                            RoleId = "465b590d-d7cd-4b1f-b897-de900e81ac5c"
+                            UserId = "bb0b5bc4-c8ca-4513-b6e9-cad12903a5f1",
+                            RoleId = "98de57f4-0120-47ed-adf5-dfd68c5e93f7"
                         });
                 });
 
