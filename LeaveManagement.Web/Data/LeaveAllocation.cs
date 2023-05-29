@@ -17,5 +17,6 @@ namespace LeaveManagement.Web.Data
 
         [Display(Name ="Id de l'employé")]
         public string EmployeeId { get; set; }
+        public int Period { get; set; } // (= une année), peut être remplacé par 2 champs : StartPeriod, EndPeriod
     }
 }

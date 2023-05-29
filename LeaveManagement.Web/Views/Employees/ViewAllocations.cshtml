@@ -1,0 +1,80 @@
+﻿@model LeaveManagement.Web.Models.EmployeeAllocationVM
+
+@{
+    ViewData["Title"] = "ViewAllocations";
+}
+
+<h1>Allocations pour @Model.FirstName @Model.LastName</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DateJoined)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DateJoined)
+        </dd>
+    </dl>
+</div>
+
+<div class="card">
+  <div class="card-header">
+        <h4>Allocation des congés</h4>
+  </div>
+  <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+          <div class="row">
+              <div class="col">Type de congés</div>
+              <div class="col">Allocation originale (jours)</div>
+              <div class="col">Allocation actuelle (jours)</div>
+              <div class="col">Action</div>
+          </div>
+      </li>
+    @foreach(var allocation in Model.LeaveAllocations)
+    {
+        <li class="list-group-item">
+          <div class="row">
+              <div class="col">
+                  <h6>@allocation.LeaveType.Name</h6>
+              </div>
+              <div class="col">
+                  <button type="button" class="btn btn-primary">
+                     Jours alloués <span class="badge bg-secondary">@allocation.LeaveType.DefaultDays</span>
+                  </button>
+              </div>
+              <div class="col">
+                  <button type="button" class="btn btn-primary">
+                     Jours alloués <span class="badge bg-secondary">@allocation.LeaveType.DefaultDays</span>
+                  </button>
+              </div>
+              <div class="col"><a asp-action="EditAllocation" asp-route-id="@allocation.Id" class="btn btn-warning">
+                    <i class="fas fa-pencil-alt"></i> Modifier l'allocation</a>
+              </div>
+          </div>
+        </li>
+    }
+    </ul>
+</div>
+<br />
+<div>
+    <a asp-action="Index" class="btn btn-dark">Retour à la liste</a>&nbsp;
+</div>

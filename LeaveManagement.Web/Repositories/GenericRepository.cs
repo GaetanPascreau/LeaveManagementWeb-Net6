@@ -20,6 +20,12 @@ namespace LeaveManagement.Web.Repositories
             return entity; //on retourne ainsi l'Id qui a été autogénéré pour cet entity lors de l'enregistrement en bdd
         }
 
+        public async Task AddRangeAsync(List<T> entities)
+        {
+            await _context.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var entity = await GetAsync(id);
