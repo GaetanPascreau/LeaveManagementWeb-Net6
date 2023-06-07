@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/fontawesome.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LeaveManagement.Web.styles.css" asp-append-version="true" />
 </head>
@@ -25,12 +26,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">Poser des congés</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">Mes congés</a>
-                        </li>
+
+                        @if(User.IsInRole(Roles.User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="LeaveRequests" asp-action="Create">Poser des congés</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">Mes congés</a>
+                            </li>
+                        }
+                        
                         @if(User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.Supervisor))
                         {
                             <li class="nav-item">
@@ -42,9 +48,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li><a class="dropdown-item" asp-controller="LeaveTypes" asp-action="Index">Types de congés</a></li>
-                                    <li><a class="dropdown-item" href="#">Allocations des congés</a></li>
-                                    <li><a class="dropdown-item" href="#">Demandes de congés</a></li>
-                                    <li><a class="dropdown-item" href="#">Gestion des employés</a></li>
+                                    <li><a class="dropdown-item" asp-controller="LeaveRequests" asp-action="Index">Demandes de congés</a></li>
                                 </ul>
                             </li>
                         }
@@ -70,9 +74,13 @@
     <script src="~/lib/sweetalert/sweetalert.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <script>
         $(function() {
             $('.table').DataTable();
+            $( ".datepicker" ).datepicker({
+                dateFormat: "dd-mm-yy"
+            });
         });    
     </script>
     <script src="https://kit.fontawesome.com/a56dbf7520.js" crossorigin="anonymous"></script>
