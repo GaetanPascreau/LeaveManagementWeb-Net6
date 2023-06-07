@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Web.Data;
-using AutoMapper;
-using LeaveManagement.Web.Models;
-using LeaveManagement.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
 using LeaveManagement.Web.Constants;
+using LeaveManagement.Web.Contracts;
+using LeaveManagement.Web.Data;
+using LeaveManagement.Web.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -21,8 +16,8 @@ namespace LeaveManagement.Web.Controllers
         private readonly ILeaveAllocationRepository _leaveAllocationRepository;
         private readonly IMapper _mapper;
 
-        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository, 
-            ILeaveAllocationRepository leaveAllocationRepository, 
+        public LeaveTypesController(ILeaveTypeRepository leaveTypeRepository,
+            ILeaveAllocationRepository leaveAllocationRepository,
             IMapper mapper)
         {
             _leaveTypeRepository = leaveTypeRepository;
@@ -41,7 +36,7 @@ namespace LeaveManagement.Web.Controllers
             }
 
             var leaveTypesVM = _mapper.Map<List<LeaveTypeVM>>(leaveTypes);
-            
+
             return View(leaveTypesVM);
         }
 
@@ -49,7 +44,7 @@ namespace LeaveManagement.Web.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             var leaveType = await _leaveTypeRepository.GetAsync(id);
-                
+
             if (leaveType == null)
             {
                 return NotFound();

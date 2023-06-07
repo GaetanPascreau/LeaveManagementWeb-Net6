@@ -3,7 +3,6 @@ using LeaveManagement.Web.Constants;
 using LeaveManagement.Web.Contracts;
 using LeaveManagement.Web.Data;
 using LeaveManagement.Web.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +42,7 @@ namespace LeaveManagement.Web.Controllers
             return View(model);
         }
 
-        
+
 
         // GET: EmployeesController/EditAllocation/5
         public async Task<IActionResult> EditAllocation(int id)
@@ -70,9 +69,9 @@ namespace LeaveManagement.Web.Controllers
                     {
                         return RedirectToAction(nameof(ViewAllocations), new { id = model.EmployeeId });
                     }
-                }     
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "Une erreur s'est produite. Veuillez réessayer plus tard.");
             }

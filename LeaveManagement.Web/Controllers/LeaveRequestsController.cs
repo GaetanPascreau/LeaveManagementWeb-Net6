@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LeaveManagement.Web.Constants;
+using LeaveManagement.Web.Contracts;
+using LeaveManagement.Web.Data;
+using LeaveManagement.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using LeaveManagement.Web.Data;
-using LeaveManagement.Web.Models;
-using AutoMapper;
-using LeaveManagement.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
-using LeaveManagement.Web.Constants;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -49,7 +44,7 @@ namespace LeaveManagement.Web.Controllers
 
             if (model == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             return View(model);
@@ -112,7 +107,7 @@ namespace LeaveManagement.Web.Controllers
                 {
                     var isValidRequest = await _leaveRequestRepository.CreateLeaveRequest(model);
 
-                    if(isValidRequest)
+                    if (isValidRequest)
                     {
                         return RedirectToAction(nameof(MyLeave));
                     }
@@ -216,14 +211,14 @@ namespace LeaveManagement.Web.Controllers
             {
                 _context.LeaveRequests.Remove(leaveRequest);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool LeaveRequestExists(int id)
         {
-          return (_context.LeaveRequests?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.LeaveRequests?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

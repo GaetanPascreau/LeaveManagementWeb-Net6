@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using LeaveManagement.Web.Constants;
 using LeaveManagement.Web.Contracts;
 using LeaveManagement.Web.Data;
 using LeaveManagement.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace LeaveManagement.Web.Repositories
 {
@@ -15,22 +15,25 @@ namespace LeaveManagement.Web.Repositories
         private readonly UserManager<Employee> _userManager;
         private readonly ILeaveTypeRepository _leaveTypeRepository;
         private readonly IMapper _mapper;
+        private readonly AutoMapper.IConfigurationProvider _configurationProvider;
 
         public LeaveAllocationRepository(ApplicationDbContext context,
             UserManager<Employee> userManager,
             ILeaveTypeRepository leaveTypeRepository,
-            IMapper mapper) : base(context)
+            IMapper mapper,
+            AutoMapper.IConfigurationProvider configurationProvider) : base(context)
         {
             _context = context;
             _userManager = userManager;
             _leaveTypeRepository = leaveTypeRepository;
             _mapper = mapper;
+            _configurationProvider = configurationProvider;
         }
 
         public async Task<bool> AllocationExists(string EmployeeId, int LeaveTypeId, int period)
         {
-            return await _context.LeaveAllocations.AnyAsync(q => q.EmployeeId == EmployeeId 
-                                                                && q.LeaveTypeId == LeaveTypeId 
+            return await _context.LeaveAllocations.AnyAsync(q => q.EmployeeId == EmployeeId
+                                                                && q.LeaveTypeId == LeaveTypeId
                                                                 && q.Period == period);
         }
 
@@ -39,7 +42,9 @@ namespace LeaveManagement.Web.Repositories
             // Récupérer la liste des allocations par type de congés (et avec ses détails) pour l'employé précisé
             var allocations = await _context.LeaveAllocations
                 .Include(q => q.LeaveType)
-                .Where(q => q.EmployeeId == employeeId).ToListAsync();
+                .Where(q => q.EmployeeId == employeeId)
+                .ProjectTo<LeaveAllocationVM>(_configurationProvider)
+                .ToListAsync();
 
             // Récupérer les informations de l'employé
             var employee = await _userManager.FindByIdAsync(employeeId);

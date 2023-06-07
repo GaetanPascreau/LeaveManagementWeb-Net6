@@ -1,6 +1,4 @@
-﻿using LeaveManagement.Web.Data;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LeaveManagement.Web.Models
 {
@@ -12,6 +10,8 @@ namespace LeaveManagement.Web.Models
         public LeaveTypeVM LeaveType { get; set; }
 
         [Display(Name = "Date de la demande")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [DataType(DataType.Date)]
         public DateTime DateRequested { get; set; }
 
         [Display(Name = "Etat")]
