@@ -1,7 +1,7 @@
-﻿using LeaveManagement.Web.Constants;
-using LeaveManagement.Web.Contracts;
-using LeaveManagement.Web.Data;
-using LeaveManagement.Web.Models;
+﻿using LeaveManagement.Common.Constants;
+using LeaveManagement.Application.Contracts;
+using LeaveManagement.Data;
+using LeaveManagement.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,12 +14,15 @@ namespace LeaveManagement.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILeaveRequestRepository _leaveRequestRepository;
+        private readonly ILogger<LeaveRequestsController> _logger;
 
         public LeaveRequestsController(ApplicationDbContext context,
-            ILeaveRequestRepository leaveRequestRepository)
+            ILeaveRequestRepository leaveRequestRepository,
+             ILogger<LeaveRequestsController> logger)
         {
             _context = context;
             _leaveRequestRepository = leaveRequestRepository;
+            _logger = logger;
         }
 
         [Authorize(Roles = Roles.Administrator)]
@@ -60,7 +63,7 @@ namespace LeaveManagement.Web.Controllers
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(ex, "Une erreur s'est produite en approuvant la demande de congés.");
                 throw;
             }
             return RedirectToAction(nameof(Index));
@@ -77,6 +80,8 @@ namespace LeaveManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Une erreur s'est produite en annulant la demande de congés.");
+
                 throw;
             }
 
@@ -117,6 +122,7 @@ namespace LeaveManagement.Web.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Une erreur s'est produite en créant la demande de congés.");
                 ModelState.AddModelError(string.Empty, "Une erreur s'est produite. Veuillez réessayer plus tard.");
             }
 

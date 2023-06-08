@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using LeaveManagement.Web.Constants;
-using LeaveManagement.Web.Contracts;
-using LeaveManagement.Web.Data;
-using LeaveManagement.Web.Models;
+using LeaveManagement.Common.Constants;
+using LeaveManagement.Data;
+using LeaveManagement.Common.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using LeaveManagement.Application.Contracts;
 
 namespace LeaveManagement.Web.Controllers
 {
