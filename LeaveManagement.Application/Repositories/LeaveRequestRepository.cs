@@ -91,7 +91,7 @@ namespace LeaveManagement.Application.Repositories
                 return false;
             }
 
-            int daysRequested = (int)(model.EndDate.Value - model.StartDate.Value).TotalDays;
+            int daysRequested = (int)(model.EndDate.Value - model.StartDate.Value).TotalDays +1;
 
             if (daysRequested > leaveAllocation.NumberOfDays)
             {
