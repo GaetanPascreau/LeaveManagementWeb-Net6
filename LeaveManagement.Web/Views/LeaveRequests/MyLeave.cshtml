@@ -33,8 +33,6 @@
                             Jours alloués <span class="badge bg-secondary">@allocation.NumberOfDays</span>
                         </button>
                     </div>
-                    <div class="col">
-                    </div>
                 </div>
             </li>
         }
@@ -99,11 +97,11 @@
                     }
                 </td>
                 <td>
-                    @if(item.Approved == null)
+                    @if(item.Approved == null && item.Cancelled == false)
                     {
-                        <form>
-                            <input asp-form="@item.Id" type="hidden" />
-                            <button type="submit" class="btn btn-danger btn-sm"> Annuler la demande</button>
+                        <form asp-action="Cancel">
+                            <input asp-for="@item.Id" name="id" type="hidden" />
+                            <button type="submit" class="btn btn-danger btn-sm">Annuler la demande</button>
                         </form>
                     }
                 </td>

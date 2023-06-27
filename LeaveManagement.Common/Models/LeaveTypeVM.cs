@@ -13,6 +13,6 @@ namespace LeaveManagement.Common.Models
         [Display(Name = "Nombre de Jours par Défaut")]
         [Required]
         [Range(1,50, ErrorMessage ="Veuillez entrer un nombre valide.")]
-        public int DefaultDays { get; set; }
+        public double DefaultDays { get; set; }
     }
 }

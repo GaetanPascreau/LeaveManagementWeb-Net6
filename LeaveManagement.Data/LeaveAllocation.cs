@@ -6,7 +6,7 @@ namespace LeaveManagement.Data
     public class LeaveAllocation : BaseEntity
     {
         [Display(Name ="Nombre de jours")]
-        public int NumberOfDays { get; set; }
+        public double NumberOfDays { get; set; }
 
         [ForeignKey("LeaveTypeId")]
         [Display(Name ="Type de congés")]

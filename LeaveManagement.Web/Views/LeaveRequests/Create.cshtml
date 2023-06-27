@@ -29,9 +29,33 @@
                 </div>
                  <div class="col-md-6">
                     <div class="form-group">
+                        <label asp-for="StartTime" class="control-label"></label>
+                        <select asp-for="StartTime" class="form-select">
+                            <option>Sélectionner l'heure de début</option>
+                            <option>matin</option>
+                            <option>après-midi</option>
+                        </select>
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
                         <label asp-for="EndDate" class="control-label"></label>
                         <input asp-for="EndDate" class="form-control datepicker" type="text" />
                         <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="EndTime" class="control-label"></label>
+                        <select asp-for="EndTime" class="form-select">
+                            <option>Sélectionner l'heure de fin</option>
+                            <option>matin</option>
+                            <option>après-midi</option>
+                        </select>
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
                     </div>
                 </div>
             </div>

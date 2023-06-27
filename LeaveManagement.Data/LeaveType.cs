@@ -8,6 +8,6 @@ namespace LeaveManagement.Data
         public string Name { get; set; }
 
         [Display(Name=" Jours par Défaut")]
-        public int DefaultDays { get; set; }
+        public double DefaultDays { get; set; }
     }
 }

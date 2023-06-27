@@ -10,7 +10,7 @@ namespace LeaveManagement.Common.Models
         [Display(Name = "Nombre de jours")]
         [Required]
         [Range(1, 50, ErrorMessage = "Veuillez entrer un nombre valide.")]
-        public int NumberOfDays { get; set; }
+        public double NumberOfDays { get; set; }
 
         [Display(Name = "Période d'allocation")]
         [Required]

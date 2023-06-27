@@ -19,6 +19,7 @@ namespace LeaveManagement.Application.Repositories
         private readonly UserManager<Employee> _userManager;
         private readonly AutoMapper.IConfigurationProvider _configurationProvider;
         private readonly IEmailSender _emailSender;
+        private readonly ILeaveTypeRepository _leaveTypeRepository;
 
         public LeaveRequestRepository(ApplicationDbContext context,
             IMapper mapper,
@@ -26,7 +27,8 @@ namespace LeaveManagement.Application.Repositories
             ILeaveAllocationRepository leaveAllocationRepository,
             UserManager<Employee> userManager,
             AutoMapper.IConfigurationProvider configurationProvider,
-            IEmailSender emailSender) : base(context)
+            IEmailSender emailSender,
+            ILeaveTypeRepository leaveTypeRepository) : base(context)
         {
             _context = context;
             _mapper = mapper;
@@ -35,6 +37,7 @@ namespace LeaveManagement.Application.Repositories
             _userManager = userManager;
             _configurationProvider = configurationProvider;
             _emailSender = emailSender;
+            _leaveTypeRepository = leaveTypeRepository;
         }
 
         public async Task CancelLeaveRequest(int leaveRequestId)
@@ -46,8 +49,14 @@ namespace LeaveManagement.Application.Repositories
             // Récupérer l'Id de l'employé pour l'envoi de l'Email
             var user = await _userManager.FindByIdAsync(leaveRequest.RequestingEmployeeId);
 
-            await _emailSender.SendEmailAsync(user.Email, "Demande de congés annulée", $"Votre demande de congés du " +
-               $"{leaveRequest.StartDate} au {leaveRequest.EndDate} a été annulée avec succès.");
+            // Régler les propriétés qui n'ont pas été renseignées par l'utilisateur
+            leaveRequest.LeaveType = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId).Result;
+
+            await _emailSender.SendEmailAsync(user.Email, $"Demande de {leaveRequest.LeaveType.Name} annulée",
+               $"Votre demande de {leaveRequest.LeaveType.Name} du " +
+               $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
+               $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+               $" a été annulée avec succès.");
         }
 
         public async Task ChangeApprovalStatus(int leaveRequestId, bool approved)
@@ -59,8 +68,24 @@ namespace LeaveManagement.Application.Repositories
             {
                 // Récupérer le nombre de jours alloués pour ce type de congés pour cet employé
                 var allocation = await _leaveAllocationRepository.GetEmployeeAllocation(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
-                // on calcule le nombre de jours de congés demandés
-                int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
+                
+                // On calcule le nombre de jours de congés demandés
+                double daysRequested = (double)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays + 1;
+
+                // prise en compte des demi-journées
+                if (leaveRequest.StartTime == "après-midi" && leaveRequest.EndTime == "après-midi")
+                {
+                    daysRequested -= 0.5;
+                }
+                else if (leaveRequest.StartTime == "matin" && leaveRequest.EndTime == "matin")
+                {
+                    daysRequested -= 0.5;
+                }
+                else if (leaveRequest.StartTime == "après-midi" && leaveRequest.EndTime == "matin")
+                {
+                    daysRequested -= 1;
+                }
+
                 // on met à jour le nombre de jours de congés disponibles, en fonction du nombre de jours approuvés
                 allocation.NumberOfDays -= daysRequested;
                 await _leaveAllocationRepository.UpdateAsync(allocation);
@@ -71,11 +96,17 @@ namespace LeaveManagement.Application.Repositories
             // Récupérer l'Id de l'employé pour l'envoi de l'Email
             var user = await _userManager.FindByIdAsync(leaveRequest.RequestingEmployeeId);
 
+            // Régler les propriétés qui n'ont pas été renseignées par l'utilisateur
+            leaveRequest.LeaveType = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId).Result;
+
             // On défini le texte à afficher en fonction de l'état d'approbation pour le titre de l'Email
             var approvalStatus = approved ? "Approuvée" : "Rejetée";
 
-            await _emailSender.SendEmailAsync(user.Email, $"Demande de congés {approvalStatus}", $"Votre demande de congés du " +
-               $"{leaveRequest.StartDate} au {leaveRequest.EndDate} a été {approvalStatus}.");
+            await _emailSender.SendEmailAsync(user.Email, $"Demande de {leaveRequest.LeaveType.Name} {approvalStatus}",
+               $"Votre demande de {leaveRequest.LeaveType.Name} du " +
+               $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
+               $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+               $" a été {approvalStatus}.");
         }
 
         public async Task<bool> CreateLeaveRequest(LeaveRequestCreateVM model)
@@ -83,7 +114,7 @@ namespace LeaveManagement.Application.Repositories
             // Récupérer les infos de l'utilisateur pour lui attribuer les congés posés
             var user = await _userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User);
 
-            // Vérifier que le nombre de jours déposés n'excède pas le nombre de jours alloués restants
+            // Récupérer le nombre de jours alloués restants pour l'employé concerné
             var leaveAllocation = await _leaveAllocationRepository.GetEmployeeAllocation(user.Id, model.LeaveTypeId);
 
             if (leaveAllocation == null)
@@ -91,8 +122,24 @@ namespace LeaveManagement.Application.Repositories
                 return false;
             }
 
-            int daysRequested = (int)(model.EndDate.Value - model.StartDate.Value).TotalDays +1;
+            // Récupérer le nombre de jour demandés par l'employé
+            double daysRequested = (double)(model.EndDate.Value - model.StartDate.Value).TotalDays + 1;
 
+            // prise en compte des demi-journées
+            if (model.StartTime == "après-midi" && model.EndTime == "après-midi")
+            {
+                daysRequested -= 0.5;
+            }
+            else if (model.StartTime == "matin" && model.EndTime == "matin")
+            {
+                daysRequested -= 0.5;
+            }
+            else if (model.StartTime == "après-midi" && model.EndTime == "matin")
+            {
+                daysRequested -= 1;
+            }
+
+            // Vérifier que le nombre de jours déposés n'excède pas le nombre de jours alloués restants
             if (daysRequested > leaveAllocation.NumberOfDays)
             {
                 return false;
@@ -103,11 +150,17 @@ namespace LeaveManagement.Application.Repositories
             // Régler les propriétés qui n'ont pas été renseignées par l'utilisateur
             leaveRequest.DateRequested = DateTime.Now;
             leaveRequest.RequestingEmployeeId = user.Id;
+            leaveRequest.LeaveType = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId).Result;
+            //var leaveTypeTest = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId);
+            //leaveRequest.LeaveType.Name = leaveTypeTest.Result.Name;
 
             await AddAsync(leaveRequest);
 
-            await _emailSender.SendEmailAsync(user.Email, "Demande de congés soumise avec succès.", $"Votre demande de congés du " +
-                $"{leaveRequest.StartDate} au {leaveRequest.EndDate} a été soumise pour approbation.");
+            await _emailSender.SendEmailAsync(user.Email, $"Demande de {leaveRequest.LeaveType.Name} soumise avec succès.",
+                $"Votre demande de {leaveRequest.LeaveType.Name} du " + 
+                $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
+                $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+                $" a été soumise pour approbation.");
 
             return true;
         }

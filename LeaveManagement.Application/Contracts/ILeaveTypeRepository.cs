@@ -1,4 +1,5 @@
-﻿using LeaveManagement.Data;
+﻿using LeaveManagement.Common.Models;
+using LeaveManagement.Data;
 
 namespace LeaveManagement.Application.Contracts
 {

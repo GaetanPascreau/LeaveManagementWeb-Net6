@@ -18,6 +18,14 @@ namespace LeaveManagement.Common.Models
         public DateTime? EndDate { get; set; }
 
         [Required]
+        [Display(Name ="Heure de début")]
+        public string StartTime { get; set; }
+
+        [Required]
+        [Display(Name ="Heure de fin")]
+        public string EndTime { get; set; }
+
+        [Required]
         [Display(Name = "Type de congés")]
         public int LeaveTypeId { get; set; }
         public SelectList? LeaveTypes { get; set; }
