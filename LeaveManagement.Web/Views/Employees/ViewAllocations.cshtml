@@ -66,9 +66,12 @@
                      Jours alloués <span class="badge bg-secondary">@allocation.NumberOfDays</span>
                   </button>
               </div>
-              <div class="col"><a asp-action="EditAllocation" asp-route-id="@allocation.Id" class="btn btn-warning">
-                    <i class="fas fa-pencil-alt"></i> Modifier l'allocation</a>
-              </div>
+                    @if (User.IsInRole(Roles.Administrator))
+                    {
+                        <div class="col"><a asp-action="EditAllocation" asp-route-id="@allocation.Id" class="btn btn-warning">
+                            <i class="fas fa-pencil-alt"></i> Modifier l'allocation</a>
+                        </div>
+                    }    
           </div>
         </li>
     }

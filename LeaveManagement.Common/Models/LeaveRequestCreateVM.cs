@@ -17,15 +17,15 @@ namespace LeaveManagement.Common.Models
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Veuillez choisir une heure de début.")]
         [Display(Name ="Heure de début")]
         public string StartTime { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Veuillez choisir une heure de fin.")]
         [Display(Name ="Heure de fin")]
         public string EndTime { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Veuillez sélectionner un type de congés.")]
         [Display(Name = "Type de congés")]
         public int LeaveTypeId { get; set; }
         public SelectList? LeaveTypes { get; set; }

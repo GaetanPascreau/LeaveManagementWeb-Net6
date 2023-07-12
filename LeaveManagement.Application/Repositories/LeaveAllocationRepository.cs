@@ -121,7 +121,7 @@ namespace LeaveManagement.Application.Repositories
             foreach(var employee in employeeWithNewAllocations)
             {
                 await _emailSender.SendEmailAsync(employee.Email, $"Allocation des congés pour {period}",
-                    $"Vos congés {leaveType.Name} " + 
+                    $"Vos {leaveType.Name} " + 
                     $"ont été postés pour la période de {period}. {leaveType.DefaultDays} jours vous ont été attribués.");
             }
         }

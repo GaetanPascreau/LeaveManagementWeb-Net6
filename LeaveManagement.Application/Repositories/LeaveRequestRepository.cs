@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace LeaveManagement.Application.Repositories
 {
@@ -20,6 +21,7 @@ namespace LeaveManagement.Application.Repositories
         private readonly AutoMapper.IConfigurationProvider _configurationProvider;
         private readonly IEmailSender _emailSender;
         private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
         public LeaveRequestRepository(ApplicationDbContext context,
             IMapper mapper,
@@ -28,7 +30,8 @@ namespace LeaveManagement.Application.Repositories
             UserManager<Employee> userManager,
             AutoMapper.IConfigurationProvider configurationProvider,
             IEmailSender emailSender,
-            ILeaveTypeRepository leaveTypeRepository) : base(context)
+            ILeaveTypeRepository leaveTypeRepository,
+            IEmployeeRepository employeeRepository) : base(context)
         {
             _context = context;
             _mapper = mapper;
@@ -38,6 +41,7 @@ namespace LeaveManagement.Application.Repositories
             _configurationProvider = configurationProvider;
             _emailSender = emailSender;
             _leaveTypeRepository = leaveTypeRepository;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task CancelLeaveRequest(int leaveRequestId)
@@ -151,8 +155,6 @@ namespace LeaveManagement.Application.Repositories
             leaveRequest.DateRequested = DateTime.Now;
             leaveRequest.RequestingEmployeeId = user.Id;
             leaveRequest.LeaveType = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId).Result;
-            //var leaveTypeTest = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId);
-            //leaveRequest.LeaveType.Name = leaveTypeTest.Result.Name;
 
             await AddAsync(leaveRequest);
 
@@ -161,6 +163,15 @@ namespace LeaveManagement.Application.Repositories
                 $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
                 $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
                 $" a été soumise pour approbation.");
+
+            var supervisorId = user.SupervisorId;
+            var supervisor = _employeeRepository.GetEmployeeByIdAsync(supervisorId);
+
+            await _emailSender.SendEmailAsync(supervisor.Result.Email, $"Demande de {leaveRequest.LeaveType.Name} soumise pour approbation.",
+                $"Une demande de {leaveRequest.LeaveType.Name} du " +
+                $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
+                $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+                $" a été soumise par {user.FirstName} {user.LastName} pour approbation.");
 
             return true;
         }
@@ -188,9 +199,46 @@ namespace LeaveManagement.Application.Repositories
             return model;
         }
 
+        public async Task<AdminLeaveRequestViewVM> GetLeaveRequestsBySupervisorIdAsync(string supervisorId)
+        {
+            // 1) récupérer les Employés associés au superviseur
+            var employees = await _employeeRepository.GetEmployeesBySupervisorId(supervisorId);
+
+            // 2) Récupérer les demandes de congés de ces employés (associés au superviseur)
+            var leaveRequests = new List<LeaveRequestVM>();
+            var employeeRequests = new List<LeaveRequestVM>();
+
+            foreach(var employee in employees)
+            {
+                employeeRequests = await this.GetAllAsync(employee.Id);
+                leaveRequests.AddRange(employeeRequests);
+            }
+
+            // 3) Ajouter les statistiques au tableau de bord
+            var model = new AdminLeaveRequestViewVM
+            {
+                TotalRequests = leaveRequests.Count,
+                ApprovedRequests = leaveRequests.Count(l => l.Approved == true),
+                RejectedRequests = leaveRequests.Count(l => l.Approved == false),
+                PendingRequests = leaveRequests.Count(l => l.Approved == null),
+                LeaveRequests = leaveRequests
+            };
+
+            // 4) Récupérer les infos de l'utilisateur qui a fait la demande de congés
+            foreach (var leaveRequest in model.LeaveRequests)
+            {
+                leaveRequest.Employee = _mapper.Map<EmployeeListVM>(await _userManager.FindByIdAsync(leaveRequest.RequestingEmployeeId));
+            }
+
+            return model;
+        }
+
+
         public async Task<List<LeaveRequestVM>> GetAllAsync(string employeeId)
         {
-            return await _context.LeaveRequests.Where(e => e.RequestingEmployeeId == employeeId)
+            return await _context.LeaveRequests
+                .Include(q => q.LeaveType)
+                .Where(e => e.RequestingEmployeeId == employeeId)
                 .ProjectTo<LeaveRequestVM>(_configurationProvider)
                 .ToListAsync();
         }

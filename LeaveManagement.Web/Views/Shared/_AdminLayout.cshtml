@@ -203,7 +203,7 @@
                                 <span>Accueil</span>
                             </a>
                         </li>
-                        @if (User.IsInRole(Roles.User))
+                            @if (User.IsInRole(Roles.User) && !User.IsInRole(Roles.Supervisor))
                         {
                             <li class="sidebar-item">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="LeaveRequests" asp-action="Create">
@@ -219,7 +219,47 @@
                             </li>
                         }
 
-                        @if (User.IsInRole(Roles.Administrator) || User.IsInRole(Roles.Supervisor))
+                        @if (User.IsInRole(Roles.Supervisor))
+                        {
+                            // Partie pour la gestion du compte personnel du superviseur"
+                            <li class="sidebar-item" style="text-align:center">
+                                <hr />
+                                <span class="align-items-center">Mon compte</span>
+                                <hr />
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="LeaveRequests" asp-action="Create">
+                                    <i class="fas fa-pen-alt"></i>&nbsp;&nbsp;
+                                    <span>Poser des congés</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="LeaveRequests" asp-action="MyLeave">
+                                    <i class="fas fa-person-walking-arrow-right"></i>&nbsp;&nbsp;
+                                    <span>Mes congés</span>
+                                </a>
+                            </li>
+                                // Partie pour la gestion de l'équipe du superviseur
+                            <li class="sidebar-item" style="text-align:center">
+                                <hr />
+                                <span>Mon équipe</span>
+                                <hr />
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="Employees" asp-action="Index">
+                                    <i class="fas fa-users"></i>&nbsp;&nbsp;
+                                    <span>Equipe</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="LeaveRequests" asp-action="Index">
+                                    <i class="fas fa-list-check"></i>&nbsp;&nbsp;
+                                    <span>Demandes de congés</span>
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(Roles.Administrator))
                         {
                             <li class="sidebar-item">
                                 <a class="sidebar-link waves-effect waves-dark sidebar-link" asp-area="" asp-controller="Employees" asp-action="Index">

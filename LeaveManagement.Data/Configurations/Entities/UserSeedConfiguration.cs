@@ -21,7 +21,9 @@ namespace LeaveManagement.Data.Configurations.Entities
                     FirstName = "System",
                     LastName = "Admin",
                     PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Employer = "Sogescot",
+                    SupervisorId = "8d30dbae-134d-4137-8e2e-ec7c96ee1d82"
                 },
                 new Employee
                 {
@@ -33,7 +35,9 @@ namespace LeaveManagement.Data.Configurations.Entities
                     FirstName = "System",
                     LastName = "User",
                     PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Employer = "Sogescot",
+                    SupervisorId = "3dce240b-4ce6-4202-b816-b5cc763352a7"
                 },
                 new Employee
                 {
@@ -45,7 +49,9 @@ namespace LeaveManagement.Data.Configurations.Entities
                     FirstName = "System",
                     LastName = "Supervisor",
                     PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Employer = "Sogescot",
+                    SupervisorId = "8d30dbae-134d-4137-8e2e-ec7c96ee1d82"
                 }
             );
         }

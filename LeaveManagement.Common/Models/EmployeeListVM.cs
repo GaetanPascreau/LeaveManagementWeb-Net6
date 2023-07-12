@@ -19,5 +19,11 @@ namespace LeaveManagement.Common.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         [DataType(DataType.Date)]
         public DateTime DateJoined { get; set; }
+
+        [Display(Name ="Superviseur")]
+        public string SupervisorId { get; set; }
+
+        [Display(Name = "Employeur")]
+        public string Employer { get; set; }
     }
 }

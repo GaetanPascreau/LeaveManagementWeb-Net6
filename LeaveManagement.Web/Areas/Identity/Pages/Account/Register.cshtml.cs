@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using LeaveManagement.Common.Constants;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace LeaveManagement.Web.Areas.Identity.Pages.Account
 {
@@ -66,6 +68,11 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         /// <summary>
+        /// Pour ajouter la liste des supervisuers dans le Select
+        /// </summary>
+        public SelectList Supervisors { get; set; }
+
+        /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
@@ -88,22 +95,32 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             [Display(Name = "Nom")]
             public string LastName { get; set; }
 
+            [Required]
             [Display(Name = "Date de naissance")]
             [DataType(DataType.Date)]
             public DateTime DateOfBirth { get; set; }
 
+            [Required]
             [Display(Name = "Date d'embauche")]
             [DataType(DataType.Date)]
             public DateTime DateJoined { get; set; }
+
+            [Required]
+            [Display(Name = "Employeur")]
+            public string Employer { get; set; }
+
+            [Required(ErrorMessage = "Veuillez sélectionner un Superviseur.")]
+            [Display(Name = "Superviseur")]
+            public string SupervisorId { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "Le {0} doit comporter au minimum {2} et au maximum {1} caractères.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Mot de passe")]
             public string Password { get; set; }
 
             /// <summary>
@@ -111,9 +128,13 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmation du Mot de passe")]
+            [Compare("Password", ErrorMessage = "Le Mot de passe et la Confirmation du Mot de passe ne sont pas identiques.")]
             public string ConfirmPassword { get; set; }
+
+            [System.ComponentModel.Bindable(true)]
+            [System.ComponentModel.SettingsBindable(true)]
+            public bool IsSupervisor { get; set; }
         }
 
 
@@ -121,6 +142,10 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            // Récupérer la liste des employés avec un rôle Superviseur pour les afficher dans un select
+            var supervisors = await _userManager.GetUsersInRoleAsync("Supervisor");
+            Supervisors = new SelectList(supervisors, "Id", "FullName");
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -137,14 +162,22 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.DateOfBirth = Input.DateOfBirth;
                 user.DateJoined = Input.DateJoined;
+                user.Employer = Input.Employer;
+                user.SupervisorId = Input.SupervisorId;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("L'utilisateur a créé un nouveau compte avec un mot de passe.");
 
                     await _userManager.AddToRoleAsync(user, Roles.User);
+
+                    // Si la case Superviseur est cochée, on ajoute aussi un role de Superviseur pour cet Employé
+                    if (Input.IsSupervisor)
+                    {
+                        await _userManager.AddToRoleAsync(user, Roles.Supervisor);
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -155,8 +188,8 @@ namespace LeaveManagement.Web.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Confirmez votre Email",
+                        $"Merci de confirmer votre compte en <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>cliquant ici</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

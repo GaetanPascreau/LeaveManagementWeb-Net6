@@ -9,6 +9,7 @@ namespace LeaveManagement.Application.Contracts
         Task<EmployeeLeaveRequestViewVM> GetMyLeaveDetails();
         Task<LeaveRequestVM?> GetLeaveRequestAsync(int? id);
         Task<List<LeaveRequestVM>> GetAllAsync(string employeeId);
+        Task<AdminLeaveRequestViewVM> GetLeaveRequestsBySupervisorIdAsync(string supervisorId);
         Task<AdminLeaveRequestViewVM> GetAdminLeaveRequestList();
         Task ChangeApprovalStatus(int leaveRequestId, bool approved);
         Task CancelLeaveRequest (int leaveRequestId);

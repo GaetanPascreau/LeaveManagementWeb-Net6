@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace LeaveManagement.Web.Controllers
 {
@@ -15,21 +16,41 @@ namespace LeaveManagement.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly ILogger<LeaveRequestsController> _logger;
+        private readonly UserManager<Employee> _userManager;
 
-        public LeaveRequestsController(ApplicationDbContext context,
+        public LeaveRequestsController(
+            ApplicationDbContext context,
             ILeaveRequestRepository leaveRequestRepository,
-             ILogger<LeaveRequestsController> logger)
+            ILogger<LeaveRequestsController> logger,
+            UserManager<Employee> userManager)
         {
             _context = context;
             _leaveRequestRepository = leaveRequestRepository;
             _logger = logger;
+           _userManager = userManager;
         }
 
-        [Authorize(Roles = Roles.Administrator)]
+        [Authorize(Roles = Roles.Administrator + "," + Roles.Supervisor)]
         // GET: LeaveRequests
         public async Task<IActionResult> Index()
         {
-            var model = await _leaveRequestRepository.GetAdminLeaveRequestList();
+
+            // 1) Récupérer les infos de l'utilisateur
+            var user = await _userManager.GetUserAsync(User);
+
+            // 2) Si l'utilisateur est l'Administrateur, il récupère les demandes de congés de l'ensemble des employés
+            //      sinon il récupère uniquement les demandes de congés des Employés qu'il supervise
+            var model = new AdminLeaveRequestViewVM();
+
+            if (user.UserName == "admin@localhost.com")
+            {
+                model = await _leaveRequestRepository.GetAdminLeaveRequestList();
+            }
+            else
+            {
+                model = await _leaveRequestRepository.GetLeaveRequestsBySupervisorIdAsync(user.Id);
+            }
+                
             return View(model);
         }
 

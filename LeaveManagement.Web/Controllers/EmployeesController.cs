@@ -14,23 +14,42 @@ namespace LeaveManagement.Web.Controllers
         private readonly IMapper _mapper;
         private readonly ILeaveAllocationRepository _leaveAllocationRepository;
         private readonly ILeaveTypeRepository _leaveTypeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeesController(UserManager<Employee> userManager,
+        public EmployeesController(
+            UserManager<Employee> userManager,
             IMapper mapper,
             ILeaveAllocationRepository leaveAllocationRepository,
-            ILeaveTypeRepository leaveTypeRepository)
+            ILeaveTypeRepository leaveTypeRepository,
+            IEmployeeRepository employeeRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
             _leaveAllocationRepository = leaveAllocationRepository;
             _leaveTypeRepository = leaveTypeRepository;
+            _employeeRepository = employeeRepository;
         }
 
         // GET: EmployeesController
         public async Task<IActionResult> Index()
         {
-            // Récupérer la liste des employés
-            var employees = await _userManager.GetUsersInRoleAsync(Roles.User);
+            // 1) Récupérer les infos de l'utilisateur
+            var user = await _userManager.GetUserAsync(User);
+
+            // 2) Si l'utilisateur est l'Administrateur, il récupère l'ensemble des employés
+            //      sinon il ne récupère que les Employés qu'il supervise
+            var employees = new List<Employee>();
+
+            if (user.UserName == "admin@localhost.com")
+            {
+                 employees = (List<Employee>)await _userManager.GetUsersInRoleAsync(Roles.User);
+            }
+            else
+            {
+                //il faut filtrer les Employés par leur SupervisorId, qui doit correspondre à l'Id du superviseur
+                employees = await _employeeRepository.GetEmployeesBySupervisorId(user.Id);
+            }
+
             var model = _mapper.Map<List<EmployeeListVM>>(employees);
             return View(model);
         }

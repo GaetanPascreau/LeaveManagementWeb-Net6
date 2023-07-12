@@ -11,6 +11,12 @@ namespace LeaveManagement.Data
         [Display(Name = "Nom")]
         public string? LastName { get; set; }
 
+        [Display(Name = "Nom complet")]
+        public string FullName
+        {
+            get { return $"{ FirstName} { LastName }"; }
+        }
+
         [Display(Name ="Numéro de Sécurité sociale")]
         public string? SSN { get; set; }
 
@@ -19,5 +25,11 @@ namespace LeaveManagement.Data
 
         [Display(Name ="Date d'embauche")]
         public DateTime DateJoined { get; set; }
+
+        [Display(Name ="Superviseur")]
+        public string SupervisorId { get; set; }
+
+        [Display(Name ="Employeur")]
+        public string Employer { get; set; }
     }
 }
