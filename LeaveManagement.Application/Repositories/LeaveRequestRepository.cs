@@ -23,6 +23,22 @@ namespace LeaveManagement.Application.Repositories
         private readonly ILeaveTypeRepository _leaveTypeRepository;
         private readonly IEmployeeRepository _employeeRepository;
 
+        // Définir les jours fériés de l'année en cours
+        List<DateTime> holidays = new List<DateTime>
+        {
+            new DateTime(2023, 01, 01), // jour de l'an
+            new DateTime(2023,04,10),   // lundi de Pâques
+            new DateTime(2023,05,01),   // Fête du travail
+            new DateTime(2023,05,08),   // Armistice 1945
+            new DateTime(2023,05,18),   // jeudi de l'Ascension
+            new DateTime(2023,05,29),   // lundi de Pentcôte
+            new DateTime(2023,07,14),   // Fête nationale
+            new DateTime(2023,08,15),   // Assomption
+            new DateTime(2023,11,01),   // Toussaint
+            new DateTime(2023,11,11),   // Armistice 1918
+            new DateTime(2023,12,25)    // Noël
+        };
+
         public LeaveRequestRepository(ApplicationDbContext context,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
@@ -67,31 +83,38 @@ namespace LeaveManagement.Application.Repositories
         {
             var leaveRequest = await GetAsync(leaveRequestId);
             leaveRequest.Approved = approved;
+            double leaveDays = 0;
 
             if (approved)
             {
                 // Récupérer le nombre de jours alloués pour ce type de congés pour cet employé
                 var allocation = await _leaveAllocationRepository.GetEmployeeAllocation(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
-                
-                // On calcule le nombre de jours de congés demandés
-                double daysRequested = (double)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays + 1;
+
+                // Récupérer le nombre de jours entiers sans les week-ends et jours fériés
+                for (DateTime date = (DateTime)leaveRequest.StartDate; date <= leaveRequest.EndDate; date = date.AddDays(1))
+                {
+                    if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday && !holidays.Contains(date))
+                    {
+                        leaveDays++;
+                    }
+                }
 
                 // prise en compte des demi-journées
                 if (leaveRequest.StartTime == "après-midi" && leaveRequest.EndTime == "après-midi")
                 {
-                    daysRequested -= 0.5;
+                    leaveDays -= 0.5;
                 }
                 else if (leaveRequest.StartTime == "matin" && leaveRequest.EndTime == "matin")
                 {
-                    daysRequested -= 0.5;
+                    leaveDays -= 0.5;
                 }
                 else if (leaveRequest.StartTime == "après-midi" && leaveRequest.EndTime == "matin")
                 {
-                    daysRequested -= 1;
+                    leaveDays -= 1;
                 }
 
                 // on met à jour le nombre de jours de congés disponibles, en fonction du nombre de jours approuvés
-                allocation.NumberOfDays -= daysRequested;
+                allocation.NumberOfDays -= leaveDays;
                 await _leaveAllocationRepository.UpdateAsync(allocation);
             }
 
@@ -110,6 +133,7 @@ namespace LeaveManagement.Application.Repositories
                $"Votre demande de {leaveRequest.LeaveType.Name} du " +
                $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
                $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+               $" ({leaveDays} jours)" +
                $" a été {approvalStatus}.");
         }
 
@@ -126,25 +150,32 @@ namespace LeaveManagement.Application.Repositories
                 return false;
             }
 
-            // Récupérer le nombre de jour demandés par l'employé
-            double daysRequested = (double)(model.EndDate.Value - model.StartDate.Value).TotalDays + 1;
+            // Récupérer le nombre de jours entiers sans les week-ends et jours fériés
+            double leaveDays = 0;
+            for (DateTime date = (DateTime)model.StartDate; date <= model.EndDate; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday && !holidays.Contains(date))
+                {
+                    leaveDays++;
+                }
+            }
 
             // prise en compte des demi-journées
             if (model.StartTime == "après-midi" && model.EndTime == "après-midi")
             {
-                daysRequested -= 0.5;
+                leaveDays -= 0.5;
             }
             else if (model.StartTime == "matin" && model.EndTime == "matin")
             {
-                daysRequested -= 0.5;
+                leaveDays -= 0.5;
             }
             else if (model.StartTime == "après-midi" && model.EndTime == "matin")
             {
-                daysRequested -= 1;
+                leaveDays -= 1;
             }
 
             // Vérifier que le nombre de jours déposés n'excède pas le nombre de jours alloués restants
-            if (daysRequested > leaveAllocation.NumberOfDays)
+            if (leaveDays > leaveAllocation.NumberOfDays)
             {
                 return false;
             }
@@ -162,6 +193,7 @@ namespace LeaveManagement.Application.Repositories
                 $"Votre demande de {leaveRequest.LeaveType.Name} du " + 
                 $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
                 $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+                $" ({leaveDays} jours)" +
                 $" a été soumise pour approbation.");
 
             var supervisorId = user.SupervisorId;
@@ -171,6 +203,7 @@ namespace LeaveManagement.Application.Repositories
                 $"Une demande de {leaveRequest.LeaveType.Name} du " +
                 $"{leaveRequest.StartDate.ToString("dd/MM/yyyy")} ({leaveRequest.StartTime})" +
                 $" au {leaveRequest.EndDate.ToString("dd/MM/yyyy")} ({leaveRequest.EndTime})" +
+                $" ({leaveDays} jours)" +
                 $" a été soumise par {user.FirstName} {user.LastName} pour approbation.");
 
             return true;
