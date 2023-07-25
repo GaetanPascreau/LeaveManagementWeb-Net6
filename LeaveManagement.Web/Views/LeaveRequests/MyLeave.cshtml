@@ -48,7 +48,16 @@
                 @Html.DisplayNameFor(model => model.LeaveRequests[0].StartDate)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].StartTime)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.LeaveRequests[0].EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].EndTime)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.LeaveRequests[0].RequestedDaysNumber)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LeaveRequests[0].LeaveType)
@@ -70,7 +79,16 @@
                     @Html.DisplayFor(modelItem => item.StartDate)
                 </td>
                 <td>
+                    @Html.DisplayFor(modelItem => item.StartTime)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RequestedDaysNumber)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.LeaveType.Name)

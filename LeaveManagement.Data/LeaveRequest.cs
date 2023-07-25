@@ -19,5 +19,6 @@ namespace LeaveManagement.Data
         public bool? Approved { get; set; } // lorsque cette propriété est nulle, la décision est en attente
         public bool Cancelled { get; set; }
         public string RequestingEmployeeId { get; set; }
+        public double RequestedDaysNumber { get; set; }
     }
 }

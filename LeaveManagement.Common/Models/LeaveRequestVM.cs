@@ -22,5 +22,8 @@ namespace LeaveManagement.Common.Models
 
         public string? RequestingEmployeeId { get; set; }
         public EmployeeListVM Employee { get; set; }
+
+        [Display(Name ="Nombre de jours")]
+        public double RequestedDaysNumber { get; set; }
     }
 }

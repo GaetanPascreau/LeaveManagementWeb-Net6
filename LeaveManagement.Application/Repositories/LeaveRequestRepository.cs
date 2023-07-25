@@ -26,7 +26,7 @@ namespace LeaveManagement.Application.Repositories
         // Définir les jours fériés de l'année en cours
         List<DateTime> holidays = new List<DateTime>
         {
-            new DateTime(2023, 01, 01), // jour de l'an
+            new DateTime(2023,01,01),   // jour de l'an
             new DateTime(2023,04,10),   // lundi de Pâques
             new DateTime(2023,05,01),   // Fête du travail
             new DateTime(2023,05,08),   // Armistice 1945
@@ -186,6 +186,7 @@ namespace LeaveManagement.Application.Repositories
             leaveRequest.DateRequested = DateTime.Now;
             leaveRequest.RequestingEmployeeId = user.Id;
             leaveRequest.LeaveType = _leaveTypeRepository.GetAsync(leaveRequest.LeaveTypeId).Result;
+            leaveRequest.RequestedDaysNumber = leaveDays;
 
             await AddAsync(leaveRequest);
 
@@ -288,9 +289,9 @@ namespace LeaveManagement.Application.Repositories
             }
 
             var model = _mapper.Map<LeaveRequestVM>(leaveRequest);
-
+            
             model.Employee = _mapper.Map<EmployeeListVM>(await _userManager.FindByIdAsync(leaveRequest?.RequestingEmployeeId));
-
+            
             return model;
         }
 
